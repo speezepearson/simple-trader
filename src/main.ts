@@ -25,9 +25,11 @@ const main = async () => {
   let lastBetId: string | undefined = undefined;
   let lastProbability: number | undefined = undefined;
 
+  let isFirst = true;
   while (true) {
     // poll every 15 seconds
-    if (lastBetId !== undefined) await sleep(15 * 1000);
+    if (!isFirst) await sleep(15 * 1000);
+    isFirst = false;
 
     const loadedBets = await getBets({
       contractSlug: slug,
@@ -38,15 +40,16 @@ const main = async () => {
     const newBets = loadedBets.filter(
       (bet) => bet.amount > 0 && !bet.isRedemption && !bet.isAnte
     );
+    console.log(`Loaded ${newBets.length} new bets.`)
 
     if (newBets.length === 0) continue;
 
     const newestBet = newBets[0];
-    if (
-      newestBet.id === lastBetId ||
-      newestBet.userUsername === username // exclude own bets
-    )
-      continue;
+    // if (
+    //   newestBet.id === lastBetId ||
+    //   newestBet.userUsername === username // exclude own bets
+    // )
+    //   continue;
 
     console.log(
       `Loaded bet:`,
